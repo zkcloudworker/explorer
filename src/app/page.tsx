@@ -43,8 +43,8 @@ export default function Explorer() {
     <>
       <header className="flex items-center justify-between h-16 px-4 md:px-6 bg-[#f0f0f0] text-[#f15b22]">
         <Link className="flex items-center gap-0" href="#">
-          <CloudWorkerIcon className="w-6 h-6" />
-          <CloudWorkerText className="w-6 h-6" />
+          <CloudWorkerIcon />
+          <CloudWorkerText />
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           <Link className="hover:underline" href="#">
@@ -96,14 +96,14 @@ export default function Explorer() {
                 <TableCell className="font-medium">abc123</TableCell>
                 <TableCell>user/repo</TableCell>
                 <TableCell>
-                  <Badge className="bg-green-500 text-white" variant="solid">
+                  <Badge className="bg-green-500 text-white" variant="outline">
                     <CheckIcon className="w-4 h-4 mr-2" />
                     Finished
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <TooltipProvider>
-                    <Tooltip content="This is a string">
+                    <Tooltip>
                       <span className="truncate">This is a string</span>
                     </Tooltip>
                   </TooltipProvider>
@@ -116,14 +116,14 @@ export default function Explorer() {
                 <TableCell className="font-medium">def456</TableCell>
                 <TableCell>another/repo</TableCell>
                 <TableCell>
-                  <Badge className="bg-yellow-500 text-white" variant="solid">
+                  <Badge className="bg-yellow-500 text-white" variant="outline">
                     <PlayIcon className="w-4 h-4 mr-2" />
                     Started
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <TooltipProvider>
-                    <Tooltip content="This is a string">
+                    <Tooltip>
                       <span className="truncate">This is a string</span>
                     </Tooltip>
                   </TooltipProvider>
@@ -136,14 +136,14 @@ export default function Explorer() {
                 <TableCell className="font-medium">ghi789</TableCell>
                 <TableCell>some/repo</TableCell>
                 <TableCell>
-                  <Badge className="bg-red-500 text-white" variant="solid">
+                  <Badge className="bg-red-500 text-white" variant="outline">
                     <XIcon className="w-4 h-4 mr-2" />
                     Failed
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <TooltipProvider>
-                    <Tooltip content="This is a string">
+                    <Tooltip>
                       <span className="truncate">This is a string</span>
                     </Tooltip>
                   </TooltipProvider>
@@ -156,14 +156,14 @@ export default function Explorer() {
                 <TableCell className="font-medium">jkl012</TableCell>
                 <TableCell>other/repo</TableCell>
                 <TableCell>
-                  <Badge className="bg-blue-500 text-white" variant="solid">
+                  <Badge className="bg-blue-500 text-white" variant="outline">
                     <PlusIcon className="w-4 h-4 mr-2" />
                     Created
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <TooltipProvider>
-                    <Tooltip content="This is a string">
+                    <Tooltip>
                       <span className="truncate">This is a string</span>
                     </Tooltip>
                   </TooltipProvider>
@@ -176,14 +176,14 @@ export default function Explorer() {
                 <TableCell className="font-medium">mno345</TableCell>
                 <TableCell>new/repo</TableCell>
                 <TableCell>
-                  <Badge className="bg-green-800 text-white" variant="solid">
+                  <Badge className="bg-green-800 text-white" variant="outline">
                     <DoubleCheckIcon className="w-4 h-4 mr-2" />
                     Used
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <TooltipProvider>
-                    <Tooltip content="This is a string">
+                    <Tooltip>
                       <span className="truncate">This is a string</span>
                     </Tooltip>
                   </TooltipProvider>
@@ -197,7 +197,7 @@ export default function Explorer() {
   );
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: any) {
   return (
     <svg
       {...props}
@@ -216,7 +216,7 @@ function CheckIcon(props) {
   );
 }
 
-function DoubleCheckIcon(props) {
+function DoubleCheckIcon(props: any) {
   return (
     <svg
       {...props}
@@ -262,7 +262,7 @@ function CloudWorkerText() {
   );
 }
 
-function CloudIconOld(props) {
+function CloudIconOld(props: any) {
   return (
     <svg
       {...props}
@@ -281,7 +281,7 @@ function CloudIconOld(props) {
   );
 }
 
-function MenuIcon(props) {
+function MenuIcon(props: any) {
   return (
     <svg
       {...props}
@@ -302,7 +302,7 @@ function MenuIcon(props) {
   );
 }
 
-function PlayIcon(props) {
+function PlayIcon(props: any) {
   return (
     <svg
       {...props}
@@ -321,7 +321,7 @@ function PlayIcon(props) {
   );
 }
 
-function PlusIcon(props) {
+function PlusIcon(props: any) {
   return (
     <svg
       {...props}
@@ -341,7 +341,7 @@ function PlusIcon(props) {
   );
 }
 
-function SearchIcon(props) {
+function SearchIcon(props: any) {
   return (
     <svg
       {...props}
@@ -361,7 +361,7 @@ function SearchIcon(props) {
   );
 }
 
-function XIcon(props) {
+function XIcon(props: any) {
   return (
     <svg
       {...props}
