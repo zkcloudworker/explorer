@@ -355,7 +355,7 @@ function CloudWorkerText() {
     <Image
       src="/zkcloudworker-text-only.svg"
       alt="zkCloudWorker Logo"
-      className="dark:invert w-64 h-70 relative object-contain"
+      className="dark:invert w-64 h-70 relative object-contain right-10"
       width={250}
       height={50}
       priority
