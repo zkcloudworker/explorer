@@ -40,14 +40,6 @@ export function PagesList({
 }) {
   const firstElement = currentPage * hitsPerPage + 1;
   const lastElement = Math.min((currentPage + 1) * hitsPerPage, totalHits);
-  console.log({
-    firstElement,
-    lastElement,
-    totalHits,
-    hitsPerPage,
-    totalPages,
-    currentPage,
-  });
   const showNext = currentPage + 5 < totalPages;
   const pages: number[] = [];
   for (let i = currentPage + 2; i < totalPages && i <= currentPage + 5; i++) {

@@ -83,12 +83,12 @@ export default function Explorer() {
 
   return (
     <>
-      <header className="flex items-center justify-between h-16 px-4 md:px-6 bg-[#f0f0f0] text-[#f15b22]">
+      <header className="dark:invert flex items-center justify-between h-16 px-4 md:px-6 bg-[#f0f0f0] text-[#f15b22]">
         <Link className="flex items-center gap-0" href="#">
           <CloudWorkerIcon />
           <CloudWorkerText />
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="dark:invert hidden md:flex items-center gap-6">
           <Link className="hover:underline" href="#">
             Home
           </Link>
