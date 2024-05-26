@@ -40,6 +40,7 @@ import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import Image from "next/image";
 import algoliasearch from "algoliasearch";
 import { useState, useEffect } from "react";
+import { PagesList } from "@/components/pages-list";
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_PROJECT!,
   process.env.NEXT_PUBLIC_ALGOLIA_KEY!
@@ -48,19 +49,37 @@ const index = client.initIndex("jobs");
 
 export default function Explorer() {
   const [hits, setHits] = useState<any[]>([]);
+  const [hitsPerPage, setHitsPerPage] = useState<number>(20);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [pageSizes, setPageSizes] = useState<number[]>([20, 50, 100]);
+  const [totalHits, setTotalHits] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const search = async (query: string) => {
-    const result = await index.search(query, {
-      hitsPerPage: 20,
-    });
-    setHits(result.hits);
-    console.log(result);
-  };
-
   useEffect(() => {
+    async function search(query: string): Promise<void> {
+      const { hits, nbHits, nbPages, page } = await index.search(query, {
+        hitsPerPage,
+        page: currentPage,
+      });
+
+      setHits(hits);
+      setCurrentPage(page);
+      setTotalPages(nbPages);
+      setTotalHits(nbHits);
+      console.log({ hits, nbHits, nbPages, page });
+    }
     search(searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, hitsPerPage, currentPage]);
+
+  function onChangeHitsPerPage(hitsPerPage: number): void {
+    console.log("onChangeHitsPerPage", hitsPerPage);
+    setHitsPerPage(hitsPerPage);
+  }
+
+  function onChangePage(page: number): void {
+    setCurrentPage(page);
+  }
 
   return (
     <>
@@ -263,6 +282,17 @@ export default function Explorer() {
             </TableBody>
           </Table>
         </div>
+        <div>
+          <PagesList
+            hitsPerPage={hitsPerPage}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSizes={pageSizes}
+            totalHits={totalHits}
+            onChangeHitsPerPage={onChangeHitsPerPage}
+            onChangePage={onChangePage}
+          />
+        </div>
       </main>
     </>
   );
@@ -325,9 +355,9 @@ function CloudWorkerText() {
     <Image
       src="/zkcloudworker-text-only.svg"
       alt="zkCloudWorker Logo"
-      className="dark:invert"
+      className="dark:invert w-64 h-70 relative object-contain"
       width={250}
-      height={70}
+      height={50}
       priority
     />
   );
