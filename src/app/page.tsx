@@ -38,14 +38,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import Image from "next/image";
-import algoliasearch from "algoliasearch";
 import { useState, useEffect } from "react";
 import { PagesList } from "@/components/pages-list";
-const client = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_PROJECT!,
-  process.env.NEXT_PUBLIC_ALGOLIA_KEY!
-);
-const index = client.initIndex("jobs");
+import { searchJobs } from "@/lib/search";
 
 export default function Explorer() {
   const [hits, setHits] = useState<any[]>([]);
@@ -58,9 +53,10 @@ export default function Explorer() {
 
   useEffect(() => {
     async function search(query: string): Promise<void> {
-      const { hits, nbHits, nbPages, page } = await index.search(query, {
+      const { hits, nbHits, nbPages, page } = await searchJobs({
+        query,
         hitsPerPage,
-        page: currentPage,
+        currentPage,
       });
 
       setHits(hits);
