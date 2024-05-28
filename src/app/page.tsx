@@ -71,7 +71,7 @@ export default function Explorer() {
   }
 
   function updateJob(item: any, key: string) {
-    console.log("updateJob", { key, item });
+    //console.log("updateJob", { key, item });
     setHits((prevHits) => {
       const index = findIndex(prevHits, item.jobId);
       let newHits: any[] = [];
@@ -85,7 +85,7 @@ export default function Explorer() {
         } else if (index !== -1) {
           newHits = [...prevHits];
           newHits[index] = item;
-        }
+        } else newHits = prevHits;
       } else if (key === "zkcloudworker.jobStatus" && index !== -1) {
         newHits = [...prevHits];
         newHits[index].jobStatus = item.jobStatus;
