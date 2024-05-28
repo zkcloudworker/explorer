@@ -67,7 +67,6 @@ export default function Explorer() {
   }, [searchQuery]);
 
   function findIndex(prevHits: any[], jobId: string): number {
-    console.log("prevHits", prevHits);
     return prevHits.findIndex((item) => item.jobId === jobId);
   }
 
@@ -75,7 +74,6 @@ export default function Explorer() {
     setHits((prevHits) => {
       const index = findIndex(prevHits, item.jobId);
       let newHits: any[] = [];
-      //console.log("updateJob", { index, hitsPerPage: hitsPerPageRef.current });
 
       if (key === "zkcloudworker.job") {
         if (
@@ -92,7 +90,6 @@ export default function Explorer() {
         newHits[index].jobStatus = item.jobStatus;
       } else newHits = prevHits;
       const truncatedHits = newHits.slice(0, hitsPerPageRef.current);
-      console.log("truncatedHits", truncatedHits);
       setHits(truncatedHits);
       return prevHits;
     });
@@ -103,7 +100,7 @@ export default function Explorer() {
 
     for await (const e of iter) {
       const item = JSON.parse(e.string());
-      console.log(`${e.key} @ ${e.revision} -> `, item);
+      //console.log(`${e.key} @ ${e.revision} -> `, item);
       updateJob(item, e.key);
     }
   }
@@ -117,7 +114,6 @@ export default function Explorer() {
       });
 
       setHits(hits);
-      console.log("search hits", hits);
       setCurrentPage(page);
       setTotalPages(nbPages);
       setTotalHits(nbHits);
@@ -135,7 +131,6 @@ export default function Explorer() {
   }, [searchQuery, hitsPerPage, currentPage, nc]);
 
   function onChangeHitsPerPage(hitsPerPage: number): void {
-    console.log("onChangeHitsPerPage", hitsPerPage);
     setHitsPerPage(hitsPerPage);
   }
 
