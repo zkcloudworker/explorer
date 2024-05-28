@@ -71,6 +71,7 @@ export default function Explorer() {
   }
 
   function updateJob(item: any, key: string) {
+    console.log("updateJob", { key, item });
     setHits((prevHits) => {
       const index = findIndex(prevHits, item.jobId);
       let newHits: any[] = [];
