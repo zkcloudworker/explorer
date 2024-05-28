@@ -38,18 +38,75 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PagesList } from "@/components/pages-list";
 import { searchJobs } from "@/lib/search";
+import { connect, NatsConnection, KV } from "nats.ws";
 
 export default function Explorer() {
   const [hits, setHits] = useState<any[]>([]);
   const [hitsPerPage, setHitsPerPage] = useState<number>(20);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [pageSizes, setPageSizes] = useState<number[]>([20, 50, 100]);
+  const [pageSizes, setPageSizes] = useState<number[]>([10, 20, 50, 100, 200]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [nc, setNc] = useState<NatsConnection | undefined>(undefined);
+
+  const hitsPerPageRef = useRef<number>(hitsPerPage);
+
+  // Update the ref whenever hitsPerPage changes
+  useEffect(() => {
+    hitsPerPageRef.current = hitsPerPage;
+  }, [hitsPerPage]);
+
+  const searchQueryRef = useRef<string>(searchQuery);
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+
+  function findIndex(prevHits: any[], jobId: string): number {
+    console.log("prevHits", prevHits);
+    return prevHits.findIndex((item) => item.jobId === jobId);
+  }
+
+  function updateJob(item: any, key: string) {
+    setHits((prevHits) => {
+      const index = findIndex(prevHits, item.jobId);
+      let newHits: any[] = [];
+      //console.log("updateJob", { index, hitsPerPage: hitsPerPageRef.current });
+
+      if (key === "zkcloudworker.job") {
+        if (
+          index === -1 &&
+          JSON.stringify(item).includes(searchQueryRef.current)
+        ) {
+          newHits = [item, ...prevHits];
+        } else if (index !== -1) {
+          newHits = [...prevHits];
+          newHits[index] = item;
+        }
+      } else if (key === "zkcloudworker.jobStatus" && index !== -1) {
+        newHits = [...prevHits];
+        newHits[index].jobStatus = item.jobStatus;
+      } else newHits = prevHits;
+      const truncatedHits = newHits.slice(0, hitsPerPageRef.current);
+      console.log("truncatedHits", truncatedHits);
+      setHits(truncatedHits);
+      return prevHits;
+    });
+  }
+
+  async function watch(kv: KV, keys: string[]) {
+    const iter = await kv.watch({ key: keys });
+
+    for await (const e of iter) {
+      const item = JSON.parse(e.string());
+      console.log(`${e.key} @ ${e.revision} -> `, item);
+      updateJob(item, e.key);
+    }
+  }
 
   useEffect(() => {
     async function search(query: string): Promise<void> {
@@ -60,13 +117,22 @@ export default function Explorer() {
       });
 
       setHits(hits);
+      console.log("search hits", hits);
       setCurrentPage(page);
       setTotalPages(nbPages);
       setTotalHits(nbHits);
-      console.log({ hits, nbHits, nbPages, page });
+      if (nc === undefined) {
+        const nc = await connect({
+          servers: process.env.NEXT_PUBLIC_NATS_SERVER,
+        });
+        setNc(nc);
+        const js = nc.jetstream();
+        const kv = await js.views.kv("profiles");
+        watch(kv, ["zkcloudworker.job", "zkcloudworker.jobStatus"]);
+      }
     }
     search(searchQuery);
-  }, [searchQuery, hitsPerPage, currentPage]);
+  }, [searchQuery, hitsPerPage, currentPage, nc]);
 
   function onChangeHitsPerPage(hitsPerPage: number): void {
     console.log("onChangeHitsPerPage", hitsPerPage);
@@ -102,12 +168,12 @@ export default function Explorer() {
       <main className="container mx-auto py-8 px-4 md:px-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold">Jobs Explorer</h1>
-          <form className="w-full md:w-auto">
+          <form className="w-1/2">
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
               <Input
                 className="pl-10 pr-4 py-2 rounded-md bg-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:focus:bg-gray-700"
-                placeholder="Search by Job ID, repo, or status"
+                placeholder="Search by Job ID, repo, metadata, or status"
                 value={searchQuery}
                 type="search"
                 onChange={(e) => setSearchQuery(e.target.value)}
