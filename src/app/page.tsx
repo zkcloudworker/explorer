@@ -92,7 +92,7 @@ export default function Explorer() {
       } else newHits = prevHits;
       const truncatedHits = newHits.slice(0, hitsPerPageRef.current);
       setHits(truncatedHits);
-      return prevHits;
+      return truncatedHits;
     });
   }
 
