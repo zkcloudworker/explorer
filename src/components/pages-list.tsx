@@ -42,7 +42,7 @@ export function PagesList({
   const lastElement = Math.min((currentPage + 1) * hitsPerPage, totalHits);
   const showNext = currentPage + 5 < totalPages;
   const pages: number[] = [];
-  for (let i = currentPage + 2; i < totalPages && i <= currentPage + 5; i++) {
+  for (let i = currentPage + 2; i <= totalPages && i <= currentPage + 5; i++) {
     pages.push(i);
   }
   return (
