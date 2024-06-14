@@ -6,7 +6,7 @@ export async function generateJWT(address: string): Promise<string> {
   let answer = await zkCloudWorkerRequest({
     command: "generateJWT",
     id: address,
-    mode: "async",
+    auth: process.env.NEXT_PUBLIC_JWT_ACCESS_KEY,
   });
 
   console.log(`zkCloudWorker answer:`, answer);
@@ -14,14 +14,14 @@ export async function generateJWT(address: string): Promise<string> {
 }
 
 async function zkCloudWorkerRequest(params: any) {
-  const { command, id, mode } = params;
+  const { command, id, auth, mode } = params;
   const apiData = {
     auth: process.env.NEXT_PUBLIC_ZKCW_AUTH,
     command: command,
     jwtToken: process.env.NEXT_PUBLIC_ZKCW_JWT,
     data: {
       id,
-      mode: mode ?? "sync",
+      auth,
     },
     chain: `mainnet`,
   };
