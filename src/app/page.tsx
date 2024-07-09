@@ -139,6 +139,10 @@ export default function Explorer() {
     setCurrentPage(page);
   }
 
+  function handleFormSubmit(e: any): void {
+    e.preventDefault();
+  }
+
   return (
     <>
       <header className="dark:invert flex items-center justify-between h-16 px-4 md:px-6 bg-[#f0f0f0] text-[#f15b22]">
@@ -170,7 +174,7 @@ export default function Explorer() {
       <main className="container mx-auto py-8 px-4 md:px-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold">Jobs Explorer</h1>
-          <form className="w-1/2">
+          <form className="w-1/2" onSubmit={handleFormSubmit}>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
               <Input
