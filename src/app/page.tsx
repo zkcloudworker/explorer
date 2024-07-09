@@ -148,13 +148,19 @@ export default function Explorer() {
         </Link>
         <nav className="dark:invert hidden md:flex items-center gap-6">
           <Link className="hover:underline" href="#">
-            Home
-          </Link>
-          <Link className="hover:underline" href="#">
             Jobs
           </Link>
-          <Link className="hover:underline" href="#">
-            About
+          <Link className="hover:underline" href="/jwt">
+            JWT
+          </Link>
+          <Link
+            className="hover:underline"
+            href="https://docs.zkcloudworker.com"
+          >
+            Docs
+          </Link>
+          <Link className="hover:underline" href="https://zkcloudworker.com">
+            Login
           </Link>
         </nav>
         <Button className="md:hidden" size="icon" variant="ghost">
@@ -182,6 +188,7 @@ export default function Explorer() {
             <TableHeader>
               <TableRow>
                 <TableHead>Time</TableHead>
+                <TableHead>Chain</TableHead>
                 <TableHead>Job ID</TableHead>
                 <TableHead>Repo</TableHead>
                 <TableHead>Status</TableHead>
@@ -197,6 +204,7 @@ export default function Explorer() {
                   <TableCell>
                     <time>{new Date(item.timeCreated).toLocaleString()}</time>
                   </TableCell>
+                  <TableCell>{item.chain}</TableCell>
                   <TableCell className="font-medium">{item.jobId}</TableCell>
                   <TableCell>{item.repo}</TableCell>
                   <TableCell>
