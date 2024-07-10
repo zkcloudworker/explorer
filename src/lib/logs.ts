@@ -17,15 +17,15 @@ export interface LogStream {
 export interface LogEvent {
   chain: string;
   timeCreated: number;
+  operation: string;
   text: string;
 }
 
 export async function getLogs(): Promise<LogEvent[]> {
-  console.log("getLogs");
   const result: LogEvent[] = [];
   const logStreams: LogStream[] = [
-    { logGroupName: "winston", logStreamName: "mainnet" },
     { logGroupName: "winston", logStreamName: "devnet" },
+    { logGroupName: "winston", logStreamName: "mainnet" },
   ];
 
   try {
@@ -41,16 +41,20 @@ export async function getLogs(): Promise<LogEvent[]> {
       const command = new GetLogEventsCommand({
         logGroupName: log.logGroupName,
         logStreamName: log.logStreamName,
+        startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
+        limit: 100,
       });
 
       const data = await client.send(command);
-      console.log("getLogs events", data.events);
+      console.log("getLogs events for", log.logStreamName, data.events?.length);
 
       for (const event of data.events ?? []) {
         let text = "parse error";
+        let operation = "unknown";
         try {
           const json = JSON.parse(event.message ?? "{}");
           if (json.text) text = json.text;
+          if (json.winstonComponent) operation = json.winstonComponent;
         } catch (error) {
           text = event.message ?? "parse error";
         }
@@ -58,12 +62,13 @@ export async function getLogs(): Promise<LogEvent[]> {
           chain: log.logStreamName,
           timeCreated: event.ingestionTime ?? Date.now(),
           text,
+          operation,
         });
       }
     }
     // sort by timeCreated
     result.sort((a, b) => b.timeCreated - a.timeCreated);
-    console.log("getLogs result", result);
+    console.log("getLogs result", result.length);
     return result;
   } catch (error: any) {
     console.error("getLogs error:", error);

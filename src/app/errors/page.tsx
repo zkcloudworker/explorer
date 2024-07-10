@@ -44,23 +44,10 @@ import { getLogs, LogEvent } from "@/lib/logs";
 
 export default function Explorer() {
   const [hits, setHits] = useState<LogEvent[]>([]);
-  const [hitsPerPage, setHitsPerPage] = useState<number>(20);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [pageSizes, setPageSizes] = useState<number[]>([10, 20, 50, 100, 200]);
-  const [totalHits, setTotalHits] = useState<number>(0);
   const [loaded, setLoaded] = useState<boolean>(false);
-
-  const hitsPerPageRef = useRef<number>(hitsPerPage);
-
-  // Update the ref whenever hitsPerPage changes
-  useEffect(() => {
-    hitsPerPageRef.current = hitsPerPage;
-  }, [hitsPerPage]);
 
   useEffect(() => {
     async function fetchCloudWatch() {
-      console.log("fetchCloudWatch");
       const hits = await getLogs();
       setHits(hits);
       setLoaded(true);
@@ -70,22 +57,6 @@ export default function Explorer() {
       fetchCloudWatch();
     }
   }, [loaded]);
-
-  function findIndex(prevHits: any[], jobId: string): number {
-    return prevHits.findIndex((item) => item.jobId === jobId);
-  }
-
-  function onChangeHitsPerPage(hitsPerPage: number): void {
-    setHitsPerPage(hitsPerPage);
-  }
-
-  function onChangePage(page: number): void {
-    setCurrentPage(page);
-  }
-
-  function handleFormSubmit(e: any): void {
-    e.preventDefault();
-  }
 
   return (
     <>
@@ -125,6 +96,7 @@ export default function Explorer() {
               <TableRow>
                 <TableHead>Time</TableHead>
                 <TableHead>Chain</TableHead>
+                <TableHead>Operation</TableHead>
                 <TableHead>Text</TableHead>
               </TableRow>
             </TableHeader>
@@ -138,104 +110,12 @@ export default function Explorer() {
                     <time>{new Date(item.timeCreated).toLocaleString()}</time>
                   </TableCell>
                   <TableCell>{item.chain}</TableCell>
+                  <TableCell>{item.operation}</TableCell>
                   <TableCell>{item.text}</TableCell>
                 </TableRow>
               ))}
-              {/*}
-              <TableRow className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <TableCell>
-                  <time dateTime="2023-05-25T09:15:30Z" title="" />
-                </TableCell>
-                <TableCell className="font-medium">def456</TableCell>
-                <TableCell>another/repo</TableCell>
-                <TableCell>
-                  <Badge className="bg-yellow-500 text-white" variant="outline">
-                    <PlayIcon className="w-4 h-4 mr-2" />
-                    Started
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <span className="truncate">This is a string</span>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <TableCell>
-                  <time dateTime="2023-05-24T16:22:00Z" title="" />
-                </TableCell>
-                <TableCell className="font-medium">ghi789</TableCell>
-                <TableCell>some/repo</TableCell>
-                <TableCell>
-                  <Badge className="bg-red-500 text-white" variant="outline">
-                    <XIcon className="w-4 h-4 mr-2" />
-                    Failed
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <span className="truncate">This is a string</span>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <TableCell>
-                  <time dateTime="2023-05-23T11:45:15Z" title="" />
-                </TableCell>
-                <TableCell className="font-medium">jkl012</TableCell>
-                <TableCell>other/repo</TableCell>
-                <TableCell>
-                  <Badge className="bg-blue-500 text-white" variant="outline">
-                    <PlusIcon className="w-4 h-4 mr-2" />
-                    Created
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <span className="truncate">This is a string</span>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <TableCell>
-                  <time dateTime="2023-05-22T14:03:45Z" title="" />
-                </TableCell>
-                <TableCell className="font-medium">mno345</TableCell>
-                <TableCell>new/repo</TableCell>
-                <TableCell>
-                  <Badge className="bg-green-800 text-white" variant="outline">
-                    <DoubleCheckIcon className="w-4 h-4 mr-2" />
-                    Used
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <span className="truncate">This is a string</span>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-            */}
             </TableBody>
           </Table>
-        </div>
-        <div>
-          <PagesList
-            hitsPerPage={hitsPerPage}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSizes={pageSizes}
-            totalHits={totalHits}
-            onChangeHitsPerPage={onChangeHitsPerPage}
-            onChangePage={onChangePage}
-          />
         </div>
       </main>
     </>
