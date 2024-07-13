@@ -76,7 +76,13 @@ export async function getLogs(): Promise<LogEvent[]> {
           try {
             const json = JSON.parse(event.message ?? "{}");
             const msg = flat(json.message);
-            text = msg === "" ? flat(json.text) : msg + ": " + flat(json.text);
+            const txt = flat(json.text);
+            text =
+              msg === ""
+                ? flat(json.text)
+                : msg + (txt === "" ? "" : ": " + txt);
+            if (json.name) text += " name:" + flat(json.name);
+            if (json.hash) text += " hash:" + flat(json.hash);
             if (json.winstonComponent) operation = json.winstonComponent;
           } catch (error) {
             text = event.message ?? "parse error";
