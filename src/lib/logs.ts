@@ -43,12 +43,12 @@ export async function getLogs(): Promise<LogEvent[]> {
       let finished = false;
       let nextToken: string | undefined = undefined;
       let count = 0;
-      while (!finished && count < 3) {
+      while (!finished && count < 10) {
         count++;
         const command = new GetLogEventsCommand({
           logGroupName: log.logGroupName,
           logStreamName: log.logStreamName,
-          startTime: Date.now() - 1000 * 60 * 60 * 24 * 3,
+          startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
           limit: 100,
           nextToken,
         });
