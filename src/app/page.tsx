@@ -209,7 +209,15 @@ export default function Explorer() {
                     <time>{new Date(item.timeCreated).toLocaleString()}</time>
                   </TableCell>
                   <TableCell>{item.chain}</TableCell>
-                  <TableCell className="font-medium">{item.jobId}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      className="hover:underline"
+                      target="_blank"
+                      href={"https://zkcloudworker.com/job/" + item.jobId}
+                    >
+                      {item.jobId}
+                    </Link>
+                  </TableCell>
                   <TableCell>{item.repo}</TableCell>
                   <TableCell>
                     {item.jobStatus === "finished" && (
