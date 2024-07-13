@@ -3,7 +3,9 @@
 import {
   CloudWatchLogsClient,
   GetLogEventsCommand,
+  GetLogEventsCommandOutput,
 } from "@aws-sdk/client-cloudwatch-logs";
+import next from "next";
 const { LOGS_ID, LOGS_KEY } = process.env;
 
 export interface LogStream {
@@ -38,32 +40,53 @@ export async function getLogs(): Promise<LogEvent[]> {
     });
 
     for (const log of logStreams) {
-      const command = new GetLogEventsCommand({
-        logGroupName: log.logGroupName,
-        logStreamName: log.logStreamName,
-        startTime: Date.now() - 1000 * 60 * 60 * 24 * 7,
-        limit: 100,
-      });
-
-      const data = await client.send(command);
-      console.log("getLogs events for", log.logStreamName, data.events?.length);
-
-      for (const event of data.events ?? []) {
-        let text = "parse error";
-        let operation = "unknown";
-        try {
-          const json = JSON.parse(event.message ?? "{}");
-          text = json.text ?? json.message ?? "";
-          if (json.winstonComponent) operation = json.winstonComponent;
-        } catch (error) {
-          text = event.message ?? "parse error";
-        }
-        result.push({
-          chain: log.logStreamName,
-          timeCreated: event.ingestionTime ?? Date.now(),
-          text,
-          operation,
+      let finished = false;
+      let nextToken: string | undefined = undefined;
+      let count = 0;
+      while (!finished && count < 3) {
+        count++;
+        const command = new GetLogEventsCommand({
+          logGroupName: log.logGroupName,
+          logStreamName: log.logStreamName,
+          startTime: Date.now() - 1000 * 60 * 60 * 24 * 3,
+          limit: 100,
+          nextToken,
         });
+
+        const data: any = await client.send(command);
+        /*
+        console.log(
+          "getLogs events for",
+          log.logStreamName,
+          data.events?.length
+        );
+        */
+        //console.log("getLogs", data);
+        if (data.nextBackwardToken === undefined) {
+          finished = true;
+        } else {
+          nextToken = (data as any).nextBackwardToken;
+        }
+
+        //if (data.events?.length === 0) finished = true;
+
+        for (const event of data.events ?? []) {
+          let text = "parse error";
+          let operation = "unknown";
+          try {
+            const json = JSON.parse(event.message ?? "{}");
+            text = json.text ?? json.message ?? "";
+            if (json.winstonComponent) operation = json.winstonComponent;
+          } catch (error) {
+            text = event.message ?? "parse error";
+          }
+          result.push({
+            chain: log.logStreamName,
+            timeCreated: event.ingestionTime ?? Date.now(),
+            text,
+            operation,
+          });
+        }
       }
     }
     // sort by timeCreated

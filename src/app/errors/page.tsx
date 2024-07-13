@@ -111,7 +111,7 @@ export default function Explorer() {
                   </TableCell>
                   <TableCell>{item.chain}</TableCell>
                   <TableCell>{item.operation}</TableCell>
-                  <TableCell>{item.text}</TableCell>
+                  <TableCell>{item.text.toString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
