@@ -88,7 +88,7 @@ export default function Explorer() {
       </header>
       <main className="container mx-auto py-8 px-4 md:px-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-bold">Errors Explorer</h1>
+          <h1 className="text-2xl font-bold">Events Explorer</h1>
         </div>
         <div className="overflow-x-auto">
           <Table>
