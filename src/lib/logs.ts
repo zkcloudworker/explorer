@@ -75,7 +75,8 @@ export async function getLogs(): Promise<LogEvent[]> {
           let operation = "unknown";
           try {
             const json = JSON.parse(event.message ?? "{}");
-            text = flat(json.message) + flat(json.text);
+            const msg = flat(json.message);
+            text = msg === "" ? flat(json.text) : msg + ": " + flat(json.text);
             if (json.winstonComponent) operation = json.winstonComponent;
           } catch (error) {
             text = event.message ?? "parse error";
@@ -104,7 +105,7 @@ function flat(data: any): string {
   if (typeof data === "number") return data.toString();
   if (typeof data === "boolean") return data.toString();
   if (typeof data === "undefined") return "";
-  if (data === null) return "null";
+  if (data === null) return "";
   if (Array.isArray(data)) return data.map(flat).join(" ");
   if (typeof data === "object") {
     return Object.keys(data)
