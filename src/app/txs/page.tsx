@@ -29,6 +29,24 @@ export interface CloudTransaction {
   status: string;
 }
 
+export interface CloudTransactionExtended {
+  /** The transaction id */
+  txId: string;
+
+  /** The transaction */
+  transaction: string;
+
+  /** The time received */
+  timeReceived: number;
+
+  /** The status of the transaction */
+  status: string;
+  developer: string;
+  repo: string;
+  id: string;
+  jobId?: string;
+}
+
 export interface CloudTransactionNatsParams {
   txs: CloudTransaction[];
   developer: string;
@@ -38,7 +56,7 @@ export interface CloudTransactionNatsParams {
 }
 
 export default function Explorer() {
-  const [hits, setHits] = useState<CloudTransaction[]>([]);
+  const [hits, setHits] = useState<CloudTransactionExtended[]>([]);
   const [nc, setNc] = useState<NatsConnection | undefined>(undefined);
 
   function findIndex(prevHits: CloudTransaction[], txId: string): number {
@@ -47,14 +65,21 @@ export default function Explorer() {
 
   function updateTxs(params: CloudTransactionNatsParams) {
     setHits((prevHits) => {
-      let newHits: CloudTransaction[] = prevHits;
+      let newHits: CloudTransactionExtended[] = prevHits;
       for (const item of params.txs) {
         const index = findIndex(newHits, item.txId);
+        const itemData: CloudTransactionExtended = {
+          ...item,
+          developer: params.developer,
+          repo: params.repo,
+          id: params.id,
+          jobId: params.jobId,
+        };
 
         if (index === -1) {
-          newHits = [item, ...newHits];
+          newHits = [itemData, ...newHits];
         } else {
-          newHits[index] = item;
+          newHits[index] = itemData;
         }
       }
       return newHits;
@@ -125,6 +150,8 @@ export default function Explorer() {
                 <TableHead>Time</TableHead>
                 <TableHead>txId</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>JobId</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>tx</TableHead>
               </TableRow>
             </TableHeader>
@@ -139,6 +166,19 @@ export default function Explorer() {
                   </TableCell>
                   <TableCell>{item.txId}</TableCell>
                   <TableCell>{item.status}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      className="hover:underline"
+                      target="_blank"
+                      href={
+                        item.jobId
+                          ? "https://zkcloudworker.com/job/" + item.jobId
+                          : "https://minarollupscan.com"
+                      }
+                    >
+                      {item.jobId ?? ""}
+                    </Link>
+                  </TableCell>
                   <TableCell>{item.transaction}</TableCell>
                 </TableRow>
               ))}
