@@ -71,11 +71,11 @@ export async function getLogs(): Promise<LogEvent[]> {
         //if (data.events?.length === 0) finished = true;
 
         for (const event of data.events ?? []) {
-          let text = "parse error";
+          let text: any = "parse error";
           let operation = "unknown";
           try {
             const json = JSON.parse(event.message ?? "{}");
-            text = json.text ?? json.message ?? "";
+            text = flat(json.message) + flat(json.text);
             if (json.winstonComponent) operation = json.winstonComponent;
           } catch (error) {
             text = event.message ?? "parse error";
@@ -97,4 +97,20 @@ export async function getLogs(): Promise<LogEvent[]> {
     console.error("getLogs error:", error);
     return [];
   }
+}
+
+function flat(data: any): string {
+  if (typeof data === "string") return data;
+  if (typeof data === "number") return data.toString();
+  if (typeof data === "boolean") return data.toString();
+  if (typeof data === "undefined") return "";
+  if (data === null) return "null";
+  if (Array.isArray(data)) return data.map(flat).join(" ");
+  if (typeof data === "object") {
+    return Object.keys(data)
+      .map((key) => key + ":" + flat(data[key]))
+      .join(" ");
+  }
+  if (data.toString !== undefined) return data.toString();
+  return "unknown";
 }
