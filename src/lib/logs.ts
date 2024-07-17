@@ -85,7 +85,7 @@ export async function getLogs(): Promise<LogEvent[]> {
             if (json.hash) text += " hash:" + flat(json.hash);
             if (json.winstonComponent) operation = json.winstonComponent;
             if (json.network) text += " network:" + flat(json.network);
-            if (json.account) text += " account:" + flat(json.hash);
+            if (json.account) text += " account:" + flat(json.account);
           } catch (error) {
             text = event.message ?? "parse error";
           }
