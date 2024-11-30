@@ -70,43 +70,42 @@ export default function Explorer() {
     return prevHits.findIndex((item) => item.jobId === jobId);
   }
 
-  function updateJob(item: any, key: string) {
-    //console.log("updateJob", { key, item });
-    setHits((prevHits) => {
-      const index = findIndex(prevHits, item.jobId);
-      let newHits: any[] = [];
-
-      if (key === "zkcloudworker.job") {
-        if (
-          index === -1 &&
-          JSON.stringify(item).includes(searchQueryRef.current)
-        ) {
-          newHits = [item, ...prevHits];
-        } else if (index !== -1) {
-          newHits = [...prevHits];
-          newHits[index] = item;
-        } else newHits = prevHits;
-      } else if (key === "zkcloudworker.jobStatus" && index !== -1) {
-        newHits = [...prevHits];
-        newHits[index].jobStatus = item.jobStatus;
-      } else newHits = prevHits;
-      const truncatedHits = newHits.slice(0, hitsPerPageRef.current);
-      setHits(truncatedHits);
-      return truncatedHits;
-    });
-  }
-
-  async function watch(kv: KV, keys: string[]) {
-    const iter = await kv.watch({ key: keys });
-
-    for await (const e of iter) {
-      const item = JSON.parse(e.string());
-      //console.log(`${e.key} @ ${e.revision} -> `, item);
-      updateJob(item, e.key);
-    }
-  }
-
   useEffect(() => {
+    function updateJob(item: any, key: string) {
+      //console.log("updateJob", { key, item });
+      setHits((prevHits) => {
+        const index = findIndex(prevHits, item.jobId);
+        let newHits: any[] = [];
+
+        if (key === "zkcloudworker.job") {
+          if (
+            index === -1 &&
+            JSON.stringify(item).includes(searchQueryRef.current)
+          ) {
+            newHits = [item, ...prevHits];
+          } else if (index !== -1) {
+            newHits = [...prevHits];
+            newHits[index] = item;
+          } else newHits = prevHits;
+        } else if (key === "zkcloudworker.jobStatus" && index !== -1) {
+          newHits = [...prevHits];
+          newHits[index].jobStatus = item.jobStatus;
+        } else newHits = prevHits;
+        const truncatedHits = newHits.slice(0, hitsPerPageRef.current);
+        setHits(truncatedHits);
+        return truncatedHits;
+      });
+    }
+
+    async function watch(kv: KV, keys: string[]) {
+      const iter = await kv.watch({ key: keys });
+
+      for await (const e of iter) {
+        const item = JSON.parse(e.string());
+        updateJob(item, e.key);
+      }
+    }
+
     async function search(query: string): Promise<void> {
       const { hits, nbHits, nbPages, page } = await searchJobs({
         query,
@@ -151,11 +150,8 @@ export default function Explorer() {
           <CloudWorkerText />
         </Link>
         <nav className="dark:invert hidden md:flex items-center gap-6">
-          <Link className="hover:underline" href="#">
-            Jobs
-          </Link>
-          <Link className="hover:underline" href="/jwt">
-            JWT
+          <Link className="hover:underline" href="https://minatokens.com">
+            MinaTokens
           </Link>
           <Link
             className="hover:underline"
