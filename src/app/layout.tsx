@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "zkCloudWorker Explorer",
-  description: "zkCloudWorker Explorer",
+  title: "Proof Generation Jobs",
+  description: "zkCloudWorker Proof Generation Jobs",
 };
 
 export default function RootLayout({
